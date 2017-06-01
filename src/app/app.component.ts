@@ -11,17 +11,19 @@ import {MeteoService} from './meteo.service'
 
 export class AppComponent implements OnInit {
   forecast: number;
-  title = 'app works!';
+  morning = 'Loading...';
+  lunch = 'Loading...';
+  endDay = 'Loading...';
 
   constructor(private meteoService: MeteoService) { }
 
   ngOnInit(): void {
-    this.refreshForecast();
-    this.meteoService.getTodayTemp(this.title);
-    this.refreshForecast();
+    this.meteoService.refreshForecast().subscribe(res => {
+      this.morning = res.morningTemp;
+      this.lunch = res.lunchTemp;
+      this.endDay = res.endDayTemp;
+    });
   }
 
-  refreshForecast() : void {
-    this.meteoService.refreshForecast();
-  }
+
 }
