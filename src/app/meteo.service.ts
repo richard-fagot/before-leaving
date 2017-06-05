@@ -31,37 +31,42 @@ export class MeteoService {
     var evening =' 18:00:00';
 
 
-    var morningForecastText = this.getTempText(forecast, Instant.MORNING);
-    var lunchForecastText = this.getTempText(forecast, Instant.LUNCH);
-    var eveningForecastText = this.getTempText(forecast, Instant.EVENING);
+    var morningForecast = this.getRoundedTemp(forecast, Instant.MORNING);
+    var lunchForecast = this.getRoundedTemp(forecast, Instant.LUNCH);
+    var eveningForecast = this.getRoundedTemp(forecast, Instant.EVENING);
+    var tomorrowMorningForecast = this.getRoundedTemp(forecast, Instant.TOMORROW_MORNING);
+    var tomorrowLunchForecast = this.getRoundedTemp(forecast, Instant.TOMORROW_LUNCH);
+    var tomorrowEveningForecast = this.getRoundedTemp(forecast, Instant.TOMORROW_EVENING);
 
     return new Forecast(
-        morningForecastText
-        ,lunchForecastText
-        ,eveningForecastText
+        morningForecast
+        ,lunchForecast
+        ,eveningForecast
+        ,tomorrowMorningForecast
+        ,tomorrowLunchForecast
+        ,tomorrowEveningForecast
       );
   }
 
-  /* Retourne un texte du type Matin : <temp>*/
-  getTempText(forecast: any, instant: Instant) : string {
-    var todayDate = new Date();
-    var tomorrowDate = new Date();
-    tomorrowDate.setDate(todayDate.getDate() +1);
+  getRoundedTemp(forecast: any, instant: Instant) : number {
+    var date = new Date();
 
-    var today = todayDate.toISOString().slice(0, 10);
-    var tomorrow =  tomorrowDate.toISOString().slice(0, 10);
-
-    var forecastDayText = this.getInstantText(instant);
-
-
-    var forecastDay = forecast.list.find(x => x.dt_txt == today + this.getInstantHour(instant));
-    if(forecastDay == null) {
-      forecastDay = forecast.list.find(x => x.dt_txt == tomorrow +  this.getInstantHour(instant));
-      forecastDayText = this.getTomorrowInstantText(instant);
+    switch(instant) {
+      case Instant.TOMORROW_MORNING:
+      case Instant.TOMORROW_LUNCH:
+      case Instant.TOMORROW_EVENING:
+        date.setDate(date.getDate() +1);
     }
-    forecastDayText += forecastDay.main.temp - 273.15;
+    
+    var dateText = date.toISOString().slice(0, 10);
 
-    return forecastDayText;
+    var roundedTemp = Forecast.NOT_AVAILABLE;
+    var forecastDay = forecast.list.find(x => x.dt_txt == dateText + this.getInstantHour(instant));
+    if(forecastDay != null) {
+      roundedTemp = Math.round(forecastDay.main.temp - 273.15);
+    }
+
+    return roundedTemp;
   }
 
   getInstantHour(instant: Instant): string {

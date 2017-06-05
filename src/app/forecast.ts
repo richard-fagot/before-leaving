@@ -4,15 +4,18 @@ export enum Instant {
   , EVENING
   , TOMORROW_MORNING
   , TOMORROW_LUNCH
-  , TOMORROW_EVENING 
+  , TOMORROW_EVENING
 };
 
 export class Forecast {
-
+  public static NOT_AVAILABLE = Number.MAX_SAFE_INTEGER;
   constructor(
-              public morningTemp: string
-              ,public lunchTemp: string
-              ,public endDayTemp: string
+              public morningTemp: number
+              ,public lunchTemp: number
+              ,public endDayTemp: number
+              ,public tomorrowMorningTemp: number
+              ,public tomorrowLunchTemp: number
+              ,public tomorrowEndDayTemp: number
             ){}
 
 
